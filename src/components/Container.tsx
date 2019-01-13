@@ -12,14 +12,6 @@ const StyledContainer = styled.div`
   max-width: ${getEmSize(widths.lg)}em;
 `
 
-interface AppLinkProps {
-  appStoreURL: string
-}
-
-const AppLink: React.SFC<AppLinkProps> = ({ appStoreURL }) => (
-  <a href={appStoreURL} >Linkety Link</a>
-)
-
 interface ContainerProps {
   className?: string
 }
@@ -28,4 +20,4 @@ const Container: React.SFC<ContainerProps> = ({ children, className }) => (
   <StyledContainer className={className}>{children}</StyledContainer>
 )
 
-export { Container, AppLink, StyledContainer }
+export { Container, StyledContainer }
