@@ -1,4 +1,4 @@
-import { StaticQuery, graphql } from "gatsby"
+import { StaticQuery, graphql, Link } from 'gatsby'
 import React, { Fragment as F } from 'react'
 
 interface AppLinkProps {
@@ -7,29 +7,34 @@ interface AppLinkProps {
 }
 
 const AppLink: React.SFC<AppLinkProps> = ({ appStoreURL }) => {
-  let browserLanguage = navigator.language
-  let folderLanguage = browserLanguage.slice(-2)
-  let getPathForLocale = (data: any, locale: any) => {
-    return data.allFile.edges.find((path: any) => path.node.relativePath.includes(locale));
+  let getGuaranteedPathForLocale = (data: any, languages: any) => {
+    var languageCodes = languages.map(language => language.slice(-2).toUpperCase())
+    var paths = data.allFile.edges.map(edge => edge.node.relativePath)
+    var validLanguageCode = languageCodes.find(lang => {
+      return paths.find(path => {
+        if (languageCodes.find(lang => path.includes(lang))) {
+          return true
+        } else {
+          return false
+        }
+      })
+    })
+
+    if (validLanguageCode) {
+      return paths.find(path => path.includes(validLanguageCode))
+    }
   }
 
-  let getGuaranteedPathForLocale = (data: any, locale: any) => {
-    let edge = getPathForLocale(data, locale)
-    if (edge) {
-      return edge.node.relativePath;
-    }
-    return getPathForLocale(data, "US").node.relativePath
-  }
   return (
     <StaticQuery
       query={AppStoreIconQuery}
       render={data => {
-        let path = getGuaranteedPathForLocale(data, folderLanguage)
-        console.log(data)
+        let path = getGuaranteedPathForLocale(data, navigator.languages)
         return (
           <F>
             <h1>Something Special</h1>
-            <img src={"assets/" + path} />
+            <img src={'assets/' + path} />
+            <Link to={appStoreURL}> App </Link>
           </F>
         )
       }}
@@ -37,18 +42,17 @@ const AppLink: React.SFC<AppLinkProps> = ({ appStoreURL }) => {
   )
 }
 
-
 export const AppStoreIconQuery = graphql`
-{
-  allFile(filter: {sourceInstanceName: {eq: "assets" }, extension:{eq: "svg"}  }) {
-    edges {
-      node {
-        id
-        relativePath
+  {
+    allFile(filter: { sourceInstanceName: { eq: "assets" }, extension: { eq: "svg" } }) {
+      edges {
+        node {
+          id
+          relativePath
+        }
       }
     }
   }
-}
 `
 
 export default AppLink
