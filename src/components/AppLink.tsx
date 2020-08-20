@@ -9,7 +9,9 @@ interface AppLinkProps {
 const AppLink: React.SFC<AppLinkProps> = ({ appStoreURL }) => {
   let getGuaranteedPathForLocale = (data: any, languages: any) => {
     var languageCodes = languages.map(language => language.slice(-2).toUpperCase())
+    console.info(languageCodes)
     var paths = data.allFile.edges.map(edge => edge.node.relativePath)
+    console.info(paths)
     var validLanguageCode = languageCodes.find(lang => {
       return paths.find(path => {
         if (languageCodes.find(lang => path.includes(lang))) {
